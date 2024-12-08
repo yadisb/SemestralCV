@@ -3,9 +3,9 @@
 session_start();
 
 // Configuración de conexión a la base de datos
-$servername = "localhost";
+$servername = "20.116.223.174";
 $username = "root";
-$password = "tu_password";
+$password = "";
 $database = "login_system";
 
 $conn = new mysqli($servername, $username, $password, $database);
