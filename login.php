@@ -2,37 +2,24 @@
 // Archivo: login.php
 session_start();
 
-// Configuración de conexión a la base de datos
-$servername = "20.116.223.174";
-$username = "root";
-$password = "";
-$database = "login_system";
+// Credenciales simuladas
+$valid_username = "admin";
+$valid_password = "password123";
 
-$conn = new mysqli($servername, $username, $password, $database);
-
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
-}
+$message = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $user = $_POST['username'];
-    $pass = $_POST['password'];
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
 
-    $sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $user, $pass);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $_SESSION['username'] = $user;
-        header("Location: index.php");
-        exit;
+    if ($username === $valid_username && $password === $valid_password) {
+        $message = "<p class=\"success\">Welcome, $username!</p>";
     } else {
-        echo "<p style='color:red;'>Usuario o contraseña incorrectos</p>";
+        $message = "<p class=\"error\">Invalid username or password.</p>";
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,60 +29,67 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
-            margin: 0;
-            padding: 0;
+            background-color: #f3f4f6;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
-        form {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        .login-container {
+            background: #ffffff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 300px;
         }
-        h1 {
+        .login-container h1 {
             text-align: center;
             margin-bottom: 20px;
+            color: #333;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
+        .login-container form {
+            display: flex;
+            flex-direction: column;
         }
-        input {
-            width: 100%;
-            padding: 8px;
+        .login-container input {
             margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            width: 100%;
             padding: 10px;
-            background-color: #007bff;
-            border: none;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .login-container button {
+            padding: 10px;
+            background-color: #4CAF50;
             color: white;
-            border-radius: 4px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #0056b3;
+        .login-container button:hover {
+            background-color: #45a049;
+        }
+        .success {
+            color: green;
+            text-align: center;
+        }
+        .error {
+            color: red;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <form method="POST" action="">
+    <div class="login-container">
         <h1>Login</h1>
-        <label for="username">Usuario:</label>
-        <input type="text" id="username" name="username" required><br>
-
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" name="password" required><br>
-
-        <button type="submit">Iniciar sesión</button>
-    </form>
+        <form method="POST" action="">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <?php echo $message; ?>
+    </div>
 </body>
 </html>
