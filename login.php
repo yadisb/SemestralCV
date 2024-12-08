@@ -1,10 +1,19 @@
 <?php
-// Archivo: login.php
 session_start();
 
-// Credenciales simuladas
-$valid_username = "admin";
-$valid_password = "password123";
+// Configuración de la base de datos
+$servername = "20.116.223.174";  // o la dirección IP de tu servidor MySQL
+$username_db = "root";      // tu usuario de MySQL
+$password_db = "";          // tu contraseña de MySQL
+$dbname = "login_system";           // tu base de datos (debes cambiar el nombre según tu caso)
+
+// Crear conexión
+$conn = new mysqli($servername, $username_db, $password_db, $dbname);
+
+// Comprobar la conexión
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 $message = "";
 
@@ -12,12 +21,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
-    if ($username === $valid_username && $password === $valid_password) {
-        $message = "<p class=\"success\">Welcome, $username!</p>";
+    // Prevenir inyecciones SQL con consultas preparadas
+    $stmt = $conn->prepare("SELECT password FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);  // "s" para string
+    $stmt->execute();
+    $stmt->store_result();
+    
+    // Verificar si el usuario existe
+    if ($stmt->num_rows > 0) {
+        $stmt->bind_result($stored_password);
+        $stmt->fetch();
+
+        // Verificar si la contraseña es correcta
+        if (password_verify($password, $stored_password)) {
+            $_SESSION['username'] = $username;  // Guardar usuario en sesión
+            $message = "<p class=\"success\">Welcome, $username!</p>";
+        } else {
+            $message = "<p class=\"error\">Invalid username or password.</p>";
+        }
     } else {
         $message = "<p class=\"error\">Invalid username or password.</p>";
     }
+
+    $stmt->close();
 }
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>
