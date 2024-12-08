@@ -33,8 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->fetch();
 
         // Depuración: imprime valores 
-        echo "<p>Username entered: $username</p>"; 
-        echo "<p>Stored password: $stored_password</p>";
+        //echo "<p>Username entered: $username</p>"; 
+        //echo "<p>Stored password: $stored_password</p>";
 
         // Verificar si la contraseña es correcta
         if ($password == $stored_password) {
