@@ -32,6 +32,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_result($stored_password);
         $stmt->fetch();
 
+        // Depuración: imprime valores 
+        echo "<p>Username entered: $username</p>"; 
+        echo "<p>Stored password: $stored_password</p>";
+
         // Verificar si la contraseña es correcta
         if (password_verify($password, $stored_password)) {
             $_SESSION['username'] = $username;  // Guardar usuario en sesión
