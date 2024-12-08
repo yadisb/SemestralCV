@@ -1,37 +1,52 @@
 <?php
-// Archivo: login.php
 session_start();
 
-// Configuración de conexión a la base de datos
-$servername = "localhost";
-$username = "root";
-$password = "";
-$database = "login_system";
+// Configuración de la base de datos
+$servername = "localhost";  // o la dirección IP de tu servidor MySQL
+$username_db = "root";      // tu usuario de MySQL
+$password_db = "";          // tu contraseña de MySQL
+$dbname = "login_system";           // tu base de datos (debes cambiar el nombre según tu caso)
 
-$conn = new mysqli($servername, $username, $password, $database);
+// Crear conexión
+$conn = new mysqli($servername, $username_db, $password_db, $dbname);
 
+// Comprobar la conexión
 if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
+    die("Connection failed: " . $conn->connect_error);
 }
+
+$message = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $user = $_POST['username'];
-    $pass = $_POST['password'];
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
 
-    $sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $user, $pass);
+    // Prevenir inyecciones SQL con consultas preparadas
+    $stmt = $conn->prepare("SELECT password FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);  // "s" para string
     $stmt->execute();
-    $result = $stmt->get_result();
+    $stmt->store_result();
+    
+    // Verificar si el usuario existe
+    if ($stmt->num_rows > 0) {
+        $stmt->bind_result($stored_password);
+        $stmt->fetch();
 
-    if ($result->num_rows > 0) {
-        $_SESSION['username'] = $user;
-        header("Location: index.php");
-        exit;
+        // Verificar si la contraseña es correcta
+        if (password_verify($password, $stored_password)) {
+            $_SESSION['username'] = $username;  // Guardar usuario en sesión
+            $message = "<p class=\"success\">Welcome, $username!</p>";
+        } else {
+            $message = "<p class=\"error\">Invalid username or password.</p>";
+        }
     } else {
-        echo "<p style='color:red;'>Usuario o contraseña incorrectos</p>";
+        $message = "<p class=\"error\">Invalid username or password.</p>";
     }
+
+    $stmt->close();
 }
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>
