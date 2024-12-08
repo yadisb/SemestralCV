@@ -3,8 +3,8 @@ session_start();
 
 // Configuración de la base de datos
 $servername = "localhost";  // o la dirección IP de tu servidor MySQL
-$username_db = "root";      // tu usuario de MySQL
-$password_db = "";          // tu contraseña de MySQL
+$username_db = "jenkins";      // tu usuario de MySQL
+$password_db = "password";          // tu contraseña de MySQL
 $dbname = "login_system";           // tu base de datos (debes cambiar el nombre según tu caso)
 
 // Crear conexión
