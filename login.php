@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo "<p>Stored password: $stored_password</p>";
 
         // Verificar si la contraseña es correcta
-        if (password_verify($password, $stored_password)) {
+        if ($password == $stored_password) {
             $_SESSION['username'] = $username;  // Guardar usuario en sesión
             $message = "<p class=\"success\">Welcome, $username!</p>";
         } else {
