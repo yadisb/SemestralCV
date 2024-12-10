@@ -116,7 +116,7 @@ $conn->close();
 </head>
 <body>
     <div class="login-container">
-        <h1>Login del Semestral</h1>
+        <h1>Login del Semestral 123</h1>
         <form method="POST" action="">
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
